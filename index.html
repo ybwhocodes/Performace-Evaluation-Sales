@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Evaluasi Performa Sales — Rolling 3 Bulan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+      colors: { stone: { 850: '#1a1817', 950: '#0f0e0d' } }
+    }
+  }
+}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap');
+.mono { font-variant-numeric: tabular-nums; }
+.tab-btn { transition: all 0.15s ease; }
+.tab-btn.active { color: #1c1917; border-bottom-color: #1c1917; }
+.dark .tab-btn.active { color: #f5f5f4; border-bottom-color: #f5f5f4; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::after { content: '+'; float: right; font-size: 1.125rem; line-height: 1; color: #a8a29e; transition: transform 0.2s; }
+details[open] > summary::after { content: '\2212'; }
+</style>
+</head>
+<body class="bg-stone-100 dark:bg-stone-950 min-h-screen text-stone-900 dark:text-stone-100 transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="border-b border-stone-200 dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm sticky top-0 z-10">
+    <div class="max-w-3xl mx-auto px-4 pt-4 pb-3">
+      <div class="flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-[11px] font-semibold tracking-[0.1em] text-stone-500 dark:text-stone-400 uppercase">Sales Performance Tool</p>
+          <h1 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mt-0.5 truncate">Evaluasi Performa Sales</h1>
+        </div>
+        <button id="themeToggle" class="shrink-0 p-2 rounded-xl text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-700 dark:hover:text-stone-300 transition" aria-label="Toggle theme">
+          <svg class="hidden dark:block w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
+          <svg class="block dark:hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Tab Navigation -->
+    <div class="border-t border-stone-200 dark:border-stone-800">
+      <div class="max-w-3xl mx-auto px-4">
+        <div class="flex gap-1 -mb-px">
+          <button onclick="switchTab('hitung')" id="tabBtn-hitung" class="tab-btn active px-4 py-2.5 text-sm font-medium text-stone-500 dark:text-stone-400 border-b-2 border-transparent hover:text-stone-700 dark:hover:text-stone-300 transition">Perhitungan</button>
+          <button onclick="switchTab('metode')" id="tabBtn-metode" class="tab-btn px-4 py-2.5 text-sm font-medium text-stone-500 dark:text-stone-400 border-b-2 border-transparent hover:text-stone-700 dark:hover:text-stone-300 transition">Metode &amp; Rumus</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- ==================== TAB: PERHITUNGAN ==================== -->
+    <div id="tab-hitung" class="tab-content active space-y-6">
+
+      <p class="text-sm text-stone-500 dark:text-stone-400">Rolling 3 Bulan · Quartil · Consistency Gate · Trend Score · Closing Canvassing</p>
+
+      <!-- Input Card -->
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-5">Input Closing</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5">Bulan 1</label>
+            <input id="b1" type="number" min="0" value="10"
+              class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 px-3 py-2.5 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5">Bulan 2</label>
+            <input id="b2" type="number" min="0" value="10"
+              class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 px-3 py-2.5 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5">Bulan 3 (terbaru)</label>
+            <input id="b3" type="number" min="0" value="30"
+              class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 px-3 py-2.5 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5">Closing dari Canvassing (total 3 bulan)</label>
+          <input id="canv" type="number" min="0" value="40"
+            class="w-full sm:w-1/3 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 px-3 py-2.5 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition">
+        </div>
+
+        <p id="errorMsg" class="text-sm text-rose-600 dark:text-rose-400 mt-2 hidden"></p>
+
+        <button onclick="hitung()"
+          class="mt-4 w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm font-semibold rounded-xl transition shadow-sm">
+          Hitung Evaluasi
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div id="resultWrap" class="hidden space-y-6">
+
+        <!-- Status banner -->
+        <div id="statusBanner" class="rounded-2xl p-6 text-white">
+          <p class="text-xs font-semibold uppercase tracking-[0.08em] opacity-80 mb-1">Keputusan Akhir</p>
+          <h2 id="statusText" class="text-3xl font-bold mb-2"></h2>
+          <p id="statusAlasan" class="text-sm opacity-90 leading-relaxed"></p>
+        </div>
+
+        <!-- Metrics grid -->
+        <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+          <h3 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-5">Ringkasan Perhitungan</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div class="bg-stone-50 dark:bg-stone-800/60 rounded-xl p-3.5">
+              <p class="text-xs text-stone-500 dark:text-stone-400 mb-1">Total 3 Bulan</p>
+              <p id="mTotal" class="text-2xl font-bold text-stone-900 dark:text-stone-100 mono"></p>
+            </div>
+            <div class="bg-stone-50 dark:bg-stone-800/60 rounded-xl p-3.5">
+              <p class="text-xs text-stone-500 dark:text-stone-400 mb-1">Kuota</p>
+              <p id="mKuota" class="text-2xl font-bold text-stone-900 dark:text-stone-100 mono"></p>
+            </div>
+            <div class="bg-stone-50 dark:bg-stone-800/60 rounded-xl p-3.5">
+              <p class="text-xs text-stone-500 dark:text-stone-400 mb-1">Trend Score</p>
+              <p id="mTrend" class="text-2xl font-bold text-stone-900 dark:text-stone-100 mono"></p>
+            </div>
+            <div class="bg-stone-50 dark:bg-stone-800/60 rounded-xl p-3.5">
+              <p class="text-xs text-stone-500 dark:text-stone-400 mb-1">Canvassing</p>
+              <p id="mCanv" class="text-2xl font-bold text-stone-900 dark:text-stone-100 mono"></p>
+            </div>
+          </div>
+
+          <div class="border-t border-stone-100 dark:border-stone-800 pt-4">
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400 w-1/2">Quartil Bulan 1 / 2 / 3</td><td id="rQuartil" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Zona Total 3 Bulan</td><td id="rZona" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Arah Tren</td><td id="rArah" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Consistency Gate</td><td id="rGate" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Status Canvassing</td><td id="rCanvStatus" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RTL -->
+        <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+          <h3 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">RTL — Rencana Tindak Lanjut</h3>
+          <p id="rtlText" class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed"></p>
+        </div>
+
+        <!-- Cara Membaca Hasil -->
+        <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+          <details>
+            <summary class="text-sm font-semibold text-stone-700 dark:text-stone-300 cursor-pointer select-none">Cara Membaca Hasil Evaluasi</summary>
+            <div class="mt-5 space-y-5 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+
+              <div>
+                <h4 class="font-medium text-stone-800 dark:text-stone-200 mb-1">Quartil (Q1–Q4)</h4>
+                <p>Menilai performa <strong>per bulan</strong>. Q1 berarti on target (&#x2265;30 closing), Q4 berarti kritis (&lt;10). Quartil menunjukkan apakah ada bulan yang mencapai target atau seluruh bulan di bawah ekspektasi.</p>
+              </div>
+
+              <div>
+                <h4 class="font-medium text-stone-800 dark:text-stone-200 mb-1">Zona Total 3 Bulan</h4>
+                <p>Menilai pencapaian <strong>kumulatif</strong> terhadap kuota 90 closing. &#x2265;63 = lulus kuota, 45-62 = zona toleransi/recovery, &lt;45 = zona kritis. Zona memberi gambaran apakah secara total sales memenuhi target minimum.</p>
+              </div>
+
+              <div>
+                <h4 class="font-medium text-stone-800 dark:text-stone-200 mb-1">Trend Score</h4>
+                <p>Rata-rata tertimbang yang memberi bobot <strong>70% pada bulan terbaru</strong>. Skor &ge;30 berarti performa terbaru sangat kuat, &lt;15 berarti risiko tinggi. Trend Score menangkap apakah performa terkini membaik atau memburuk.</p>
+              </div>
+
+              <div>
+                <h4 class="font-medium text-stone-800 dark:text-stone-200 mb-1">Consistency Gate</h4>
+                <p>Mendeteksi <strong>pola kritis berulang</strong>: 3 bulan Q4, 3 bulan di bawah 20, 2 bulan terakhir di bawah 20, atau tidak ada satu bulan pun mencapai target 30. Jika gagal, sales dianggap tidak konsisten meskipun total kumulatif tercapai.</p>
+              </div>
+
+              <div>
+                <h4 class="font-medium text-stone-800 dark:text-stone-200 mb-1">Canvassing</h4>
+                <p>Persentase closing yang berasal dari aktivitas canvassing terhadap total closing. Minimum <strong>70%</strong>. Canvassing bukan pengganti closing rendah — total tetap menjadi faktor utama.</p>
+              </div>
+
+              <div>
+                <h4 class="font-medium text-stone-800 dark:text-stone-200 mb-1">Keputusan Akhir</h4>
+                <p>Hasil akhir menggabungkan <strong>semua indikator</strong>: zona kumulatif + quartil + trend + consistency gate + canvassing. Tidak ada satu indikator yang berdiri sendiri.</p>
+                <ul class="mt-2 space-y-1 pl-4 list-disc">
+                  <li><span class="font-medium text-emerald-600 dark:text-emerald-400">LANJUT</span> — semua syarat terpenuhi</li>
+                  <li><span class="font-medium text-amber-600 dark:text-amber-400">TOLERANSI</span> — ada kekurangan tetapi masih ada peluang perbaikan</li>
+                  <li><span class="font-medium text-rose-600 dark:text-rose-400">TERMINASI</span> — performa berada pada kondisi kritis berkepanjangan</li>
+                </ul>
+              </div>
+
+            </div>
+          </details>
+        </div>
+
+      </div>
+
+      <p class="text-xs text-stone-400 dark:text-stone-600 text-center pt-4">Evaluasi Performa Sales · Rolling 3 Bulan</p>
+
+    </div>
+
+    <!-- ==================== TAB: METODE & RUMUS ==================== -->
+    <div id="tab-metode" class="tab-content space-y-6">
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">Parameter Utama</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-stone-200 dark:border-stone-700">
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Parameter</th>
+                <th class="py-2 text-right font-medium text-stone-600 dark:text-stone-400">Nilai</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Target closing bulanan</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">30 closing</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Periode evaluasi</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">3 bulan</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Kuota penuh 3 bulan</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">90 closing</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Minimum kuota kumulatif</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">63 closing (70%)</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Batas zona kritis</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">&lt; 45 closing</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Minimum kontribusi canvassing</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">70%</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Bobot Trend Score — Bulan 1</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">10%</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Bobot Trend Score — Bulan 2</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">20%</td></tr>
+              <tr><td class="py-2 text-stone-600 dark:text-stone-400">Bobot Trend Score — Bulan 3</td><td class="py-2 text-right font-medium text-stone-900 dark:text-stone-100">70%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">1. Quartil Performa Bulanan</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">Setiap bulan dikategorikan ke dalam quartil berdasarkan jumlah closing. Semakin tinggi quartil, semakin baik performa.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-stone-200 dark:border-stone-700">
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Quartil</th>
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Range</th>
+                <th class="py-2 text-left font-medium text-stone-600 dark:text-stone-400">Makna</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+              <tr><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Q1</span></td><td class="py-2.5 text-stone-900 dark:text-stone-100 font-medium">&#x2265; 30</td><td class="py-2.5 text-stone-600 dark:text-stone-400">On target</td></tr>
+              <tr><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Q2</span></td><td class="py-2.5 text-stone-900 dark:text-stone-100 font-medium">20 – 29</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Di bawah target ringan</td></tr>
+              <tr><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400">Q3</span></td><td class="py-2.5 text-stone-900 dark:text-stone-100 font-medium">10 – 19</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Di bawah target berat</td></tr>
+              <tr><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Q4</span></td><td class="py-2.5 text-stone-900 dark:text-stone-100 font-medium">0 – 9</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Kritis</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">2. Zona Total 3 Bulan</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">Menilai pencapaian kumulatif terhadap kuota 3 bulan (90 closing). Zona membagi performa menjadi tiga tingkat.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-stone-200 dark:border-stone-700">
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Total 3 Bulan</th>
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">% dari Kuota</th>
+                <th class="py-2 text-left font-medium text-stone-600 dark:text-stone-400">Zona</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">&#x2265; 63</td><td class="py-2.5 text-stone-600 dark:text-stone-400">&#x2265; 70%</td><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Lulus Kuota Kumulatif</span></td></tr>
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">45 – 62</td><td class="py-2.5 text-stone-600 dark:text-stone-400">50% – 69,9%</td><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Zona Recovery / Toleransi</span></td></tr>
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">&lt; 45</td><td class="py-2.5 text-stone-600 dark:text-stone-400">&lt; 50%</td><td class="py-2.5"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Zona Kritis</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+          <p><strong>Rumus:</strong></p>
+          <p class="font-mono text-stone-800 dark:text-stone-200 bg-stone-50 dark:bg-stone-800/60 rounded-lg p-3 mt-1">Persentase Kuota = (Total Closing / 90) &times; 100%</p>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">3. Trend Score</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">Rata-rata tertimbang yang memberi bobot lebih besar kepada performa terbaru. Bulan 3 diberi bobot 70% karena dianggap paling mencerminkan kondisi sales saat ini.</p>
+        <div class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
+          <p><strong>Rumus:</strong></p>
+          <p class="font-mono text-stone-800 dark:text-stone-200 bg-stone-50 dark:bg-stone-800/60 rounded-lg p-3 mt-1">Trend Score = (B1 &times; 10%) + (B2 &times; 20%) + (B3 &times; 70%)</p>
+        </div>
+        <div class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+          <p><strong>Interpretasi:</strong></p>
+          <div class="mt-2 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-stone-200 dark:border-stone-700">
+                  <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Skor</th>
+                  <th class="py-2 text-left font-medium text-stone-600 dark:text-stone-400">Interpretasi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+                <tr><td class="py-2 font-medium text-stone-900 dark:text-stone-100">&#x2265; 30</td><td class="py-2 text-stone-600 dark:text-stone-400">Performa terbaru sangat kuat</td></tr>
+                <tr><td class="py-2 font-medium text-stone-900 dark:text-stone-100">20 – 29,99</td><td class="py-2 text-stone-600 dark:text-stone-400">Layak recovery atau monitoring</td></tr>
+                <tr><td class="py-2 font-medium text-stone-900 dark:text-stone-100">15 – 19,99</td><td class="py-2 text-stone-600 dark:text-stone-400">Perlu PIP ketat</td></tr>
+                <tr><td class="py-2 font-medium text-stone-900 dark:text-stone-100">&lt; 15</td><td class="py-2 text-stone-600 dark:text-stone-400">Risiko tinggi / kandidat terminasi</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="mt-4 p-3 bg-stone-50 dark:bg-stone-800/60 rounded-lg text-sm">
+          <p class="font-medium text-stone-700 dark:text-stone-300 mb-1">Contoh:</p>
+          <p class="font-mono text-stone-600 dark:text-stone-400">B1=10, B2=10, B3=30</p>
+          <p class="font-mono text-stone-800 dark:text-stone-200 mt-1">= (10&times;10%) + (10&times;20%) + (30&times;70%)</p>
+          <p class="font-mono text-stone-800 dark:text-stone-200">= 1 + 2 + 21 = <strong class="text-stone-900 dark:text-stone-100">24</strong></p>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">4. Consistency Gate</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">Mendeteksi pola performa buruk yang berulang. Sistem memeriksa beberapa kondisi secara berurutan.</p>
+        <div class="space-y-3 text-sm">
+          <div class="flex items-start gap-3">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold mt-0.5">X</span>
+            <div><p class="font-medium text-stone-800 dark:text-stone-200">Gagal Kritis</p><p class="text-stone-600 dark:text-stone-400">3 bulan berturut-turut Q4 (&lt;10 closing)</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold mt-0.5">X</span>
+            <div><p class="font-medium text-stone-800 dark:text-stone-200">Gagal Berat</p><p class="text-stone-600 dark:text-stone-400">3 bulan berturut-turut di bawah 20 closing</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold mt-0.5">X</span>
+            <div><p class="font-medium text-stone-800 dark:text-stone-200">Gagal 2 Bulan Terakhir</p><p class="text-stone-600 dark:text-stone-400">Bulan 2 dan Bulan 3 di bawah 20</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold mt-0.5">X</span>
+            <div><p class="font-medium text-stone-800 dark:text-stone-200">Gagal Monthly Target Gate</p><p class="text-stone-600 dark:text-stone-400">Tidak ada satu bulan pun mencapai 30 closing</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold mt-0.5">&#x2713;</span>
+            <div><p class="font-medium text-stone-800 dark:text-stone-200">Lulus</p><p class="text-stone-600 dark:text-stone-400">Tidak masuk dalam pola gagal di atas</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">5. Closing Canvassing</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">Menghitung persentase closing yang berasal dari aktivitas canvassing terhadap total closing.</p>
+        <div class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
+          <p><strong>Rumus:</strong></p>
+          <p class="font-mono text-stone-800 dark:text-stone-200 bg-stone-50 dark:bg-stone-800/60 rounded-lg p-3 mt-1">% Canvassing = (Closing Canvassing / Total Closing) &times; 100%</p>
+        </div>
+        <p class="text-sm text-stone-600 dark:text-stone-400">Minimum kelulusan <strong>70%</strong>. Canvassing bukan pengganti closing rendah — persentase tinggi tidak otomatis lulus jika total closing masih di bawah standar.</p>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">6. Arah Tren Performa</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-stone-200 dark:border-stone-700">
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Kondisi</th>
+                <th class="py-2 pr-4 text-left font-medium text-stone-600 dark:text-stone-400">Pola</th>
+                <th class="py-2 text-left font-medium text-stone-600 dark:text-stone-400">Makna</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">Meningkat Konsisten</td><td class="py-2.5 font-mono text-stone-600 dark:text-stone-400">B1 &lt; B2 &lt; B3</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Performa terus naik</td></tr>
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">Menurun Konsisten</td><td class="py-2.5 font-mono text-stone-600 dark:text-stone-400">B1 &gt; B2 &gt; B3</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Performa terus turun</td></tr>
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">Recovery</td><td class="py-2.5 font-mono text-stone-600 dark:text-stone-400">B3 &#x2265; 30 &and; B3 &gt; B2</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Pemulihan di bulan terbaru</td></tr>
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">Stabil</td><td class="py-2.5 font-mono text-stone-600 dark:text-stone-400">B1 = B2 = B3</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Performa konsisten</td></tr>
+              <tr><td class="py-2.5 font-medium text-stone-900 dark:text-stone-100">Fluktuatif</td><td class="py-2.5 font-mono text-stone-600 dark:text-stone-400">(pola lainnya)</td><td class="py-2.5 text-stone-600 dark:text-stone-400">Performa tidak stabil</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">7. Matriks Keputusan</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">Keputusan akhir menggabungkan semua indikator: zona kumulatif, quartil, consistency gate, trend score, dan canvassing. Berikut ringkasan matriksnya:</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-stone-200 dark:border-stone-700">
+                <th class="py-2 pr-3 text-left font-medium text-stone-600 dark:text-stone-400">Total 3 Bln</th>
+                <th class="py-2 pr-3 text-left font-medium text-stone-600 dark:text-stone-400">Bln Terbaru</th>
+                <th class="py-2 pr-3 text-left font-medium text-stone-600 dark:text-stone-400">Pola</th>
+                <th class="py-2 pr-3 text-left font-medium text-stone-600 dark:text-stone-400">Canv.</th>
+                <th class="py-2 text-left font-medium text-stone-600 dark:text-stone-400">Keputusan</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 dark:divide-stone-800">
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&#x2265;63</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Konsisten</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">LANJUT</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&#x2265;63</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Tdk ada bln &#x2265;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&#x2265;63</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;20</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">2 bln terakhir &lt;20</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">45-62</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Recovery</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">45-62</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Q2/Q3</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Recovery</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;20</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Rendah</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">Berapa pun</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;10</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">3 bln Q4</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Berapa pun</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-4">8. Contoh Perhitungan</h2>
+        <div class="space-y-4">
+          <div class="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">LANJUT</span>
+              <span class="text-xs text-stone-500 dark:text-stone-400 font-mono">15, 25, 35 · Canv=55</span>
+            </div>
+            <p class="text-sm text-stone-600 dark:text-stone-400">Total 75 (83,33%), Trend Score 31, tren meningkat konsisten, semua bulan Q2/Q1, 3 bln lulus gate, canvassing 73,33% — semua syarat terpenuhi.</p>
+          </div>
+          <div class="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">TOLERANSI</span>
+              <span class="text-xs text-stone-500 dark:text-stone-400 font-mono">10, 10, 30 · Canv=40</span>
+            </div>
+            <p class="text-sm text-stone-600 dark:text-stone-400">Total 50 (55,56%), Trend Score 24, tren recovery, 2 bln Q3 lalu Q1, consistency gate lulus, canvassing 80% — bulan terakhir on target & canvassing cukup, diberi toleransi.</p>
+          </div>
+          <div class="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">TERMINASI</span>
+              <span class="text-xs text-stone-500 dark:text-stone-400 font-mono">8, 8, 8 · Canv=20</span>
+            </div>
+            <p class="text-sm text-stone-600 dark:text-stone-400">Total 24 (26,67%), Trend Score 8, Q4 semua bulan, consistency gate gagal kritis, canvassing 83,33% tidak relevan karena total sangat rendah — kandidat terminasi.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/40 p-5">
+        <h3 class="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">Catatan Penting</h3>
+        <ul class="text-sm text-amber-700 dark:text-amber-400 space-y-1.5">
+          <li>&bull; Keputusan akhir tidak boleh menggunakan hanya satu indikator — semua komponen dievaluasi bersama.</li>
+          <li>&bull; Total tinggi tetapi tren menurun tetap perlu toleransi/PIP.</li>
+          <li>&bull; Canvassing tinggi tetapi closing sangat rendah tetap dapat menjadi kandidat terminasi.</li>
+          <li>&bull; Aplikasi ini adalah alat bantu keputusan. Keputusan final tetap perlu review manajemen dan HR.</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+const THRESHOLD_BULANAN = 30;
+const KUOTA_3_BULAN = 90;
+const MINIMUM_CANVASSING_PCT = 70;
+
+function getQuartil(c) {
+  if (c >= 30) return "Q1 - On Target";
+  if (c >= 20) return "Q2 - Di Bawah Target Ringan";
+  if (c >= 10) return "Q3 - Di Bawah Target Berat";
+  return "Q4 - Kritis";
+}
+
+function getZona(total) {
+  if (total >= 63) return "Lulus Kuota Kumulatif";
+  if (total >= 45) return "Zona Recovery / Toleransi";
+  return "Zona Kritis";
+}
+
+function trendScore(b1, b2, b3) {
+  return (b1 * 0.10) + (b2 * 0.20) + (b3 * 0.70);
+}
+
+function canvassingPct(canv, total) {
+  if (total === 0) return 0;
+  return (canv / total) * 100;
+}
+
+function klasifikasiTren(b1, b2, b3) {
+  if (b1 < b2 && b2 < b3) return "Meningkat Konsisten";
+  if (b1 > b2 && b2 > b3) return "Menurun Konsisten";
+  if (b3 >= 30 && b3 > b2) return "Recovery";
+  if (b1 === b2 && b2 === b3) return "Stabil";
+  if (b2 > b1 && b2 > b3) return "Fluktuatif - Puncak di Bulan 2";
+  if (b1 > b2 && b1 > b3) return "Menurun - Puncak di Bulan 1";
+  if (b3 > b1 && b3 > b2) return "Meningkat - Puncak di Bulan 3";
+  return "Fluktuatif";
+}
+
+function consistencyGate(b1, b2, b3) {
+  if (b1 < 10 && b2 < 10 && b3 < 10) return "Gagal Kritis: 3 bulan berturut-turut Q4";
+  if (b1 < 20 && b2 < 20 && b3 < 20) return "Gagal Berat: 3 bulan berturut-turut di bawah 20";
+  if (b2 < 20 && b3 < 20) return "Gagal: 2 bulan terakhir di bawah 20";
+  if (b1 < 30 && b2 < 30 && b3 < 30) return "Gagal Monthly Target Gate: tidak ada bulan mencapai 30";
+  return "Lulus";
+}
+
+function tentukanKeputusan(b1, b2, b3, canv) {
+  const total = b1 + b2 + b3;
+  const canvPct = canvassingPct(canv, total);
+  const canvassingLulus = canvPct >= MINIMUM_CANVASSING_PCT;
+  const adaBulanOnTarget = Math.max(b1, b2, b3) >= THRESHOLD_BULANAN;
+  const duaBulanTerakhirDiBawah20 = b2 < 20 && b3 < 20;
+  const tigaBulanDiBawah20 = b1 < 20 && b2 < 20 && b3 < 20;
+  const tigaBulanQ4 = b1 < 10 && b2 < 10 && b3 < 10;
+  const recoveryBulanTerakhir = b3 >= 30 && b3 > b2;
+
+  if (tigaBulanQ4) {
+    return { status: "TERMINASI", alasan: "Tiga bulan berturut-turut berada di Q4 atau di bawah 10 closing.",
+      rtl: "Tidak ada RTL perbaikan. Lanjutkan review terminasi sesuai proses HR dan ketentuan perusahaan." };
+  }
+  if (total < 45 && tigaBulanDiBawah20) {
+    return { status: "TERMINASI", alasan: "Total 3 bulan berada di bawah 45 dan seluruh bulan berada di bawah 20 closing.",
+      rtl: "Tidak ada RTL perbaikan. Lanjutkan review terminasi sesuai proses HR dan ketentuan perusahaan." };
+  }
+  if (total < 45 && b3 < 20) {
+    return { status: "TERMINASI", alasan: "Total closing berada di zona kritis dan bulan terbaru masih di bawah 20 closing.",
+      rtl: "Tidak ada RTL perbaikan. Lanjutkan review terminasi sesuai proses HR dan ketentuan perusahaan." };
+  }
+
+  if (total >= 63 && adaBulanOnTarget && !duaBulanTerakhirDiBawah20 && canvassingLulus) {
+    return { status: "LANJUT", alasan: "Total 3 bulan memenuhi minimum 63, minimal satu bulan mencapai threshold 30, performa tidak masuk pola kritis, dan kontribusi closing canvassing mencapai 70%.",
+      rtl: "Pertahankan minimal 30 closing per bulan dan kontribusi closing canvassing minimal 70%." };
+  }
+
+  if (total >= 45 && total <= 62 && recoveryBulanTerakhir && canvassingLulus) {
+    return { status: "TOLERANSI", alasan: "Total 3 bulan belum mencapai 63, tetapi bulan terakhir mencapai threshold dan menunjukkan recovery. Kontribusi closing canvassing juga memenuhi 70%.",
+      rtl: "Bulan berikutnya minimal 24 closing (80% dari threshold), kontribusi closing canvassing minimal 70%, masa evaluasi 1 bulan." };
+  }
+  if (total >= 45 && total <= 62 && recoveryBulanTerakhir && !canvassingLulus) {
+    return { status: "TOLERANSI", alasan: "Bulan terakhir telah mencapai threshold, tetapi total 3 bulan belum mencapai 63 dan kontribusi closing canvassing masih di bawah 70%.",
+      rtl: "Bulan berikutnya wajib minimal 30 closing, kontribusi closing canvassing wajib minimal 70%, masa evaluasi 1 bulan." };
+  }
+  if (total >= 63 && !adaBulanOnTarget) {
+    return { status: "TOLERANSI", alasan: "Total kumulatif telah mencapai minimum 63, tetapi tidak ada satu bulan pun yang mencapai threshold 30.",
+      rtl: "Bulan berikutnya wajib minimal 30 closing karena tiga bulan berturut-turut belum mencapai target. Kontribusi closing canvassing minimal 70%." };
+  }
+  if (total >= 63 && duaBulanTerakhirDiBawah20) {
+    return { status: "TOLERANSI", alasan: "Total kumulatif memenuhi minimum, tetapi dua bulan terakhir berada di bawah 20 dan menunjukkan penurunan performa terbaru.",
+      rtl: "Bulan berikutnya wajib minimal 30 closing dan kontribusi closing canvassing minimal 70%. Masa evaluasi 1 bulan." };
+  }
+  if (total >= 63 && adaBulanOnTarget && !canvassingLulus) {
+    return { status: "TOLERANSI", alasan: "Closing telah memenuhi syarat minimum, tetapi kontribusi closing dari canvassing masih di bawah 70%.",
+      rtl: "Bulan berikutnya minimal 30 closing dan kontribusi closing canvassing wajib minimal 70%." };
+  }
+  if (total >= 45 && total <= 62 && b3 >= 20 && b3 <= 29) {
+    return { status: "TOLERANSI", alasan: "Total 3 bulan belum mencapai 63 dan bulan terakhir masih berada pada Q2.",
+      rtl: "Bulan berikutnya wajib minimal 30 closing. Kontribusi closing canvassing minimal 70%." };
+  }
+  if (total >= 45 && total <= 62 && b3 >= 10 && b3 <= 19) {
+    return { status: "TOLERANSI", alasan: "Total 3 bulan berada di zona toleransi, tetapi bulan terakhir masih berada pada Q3.",
+      rtl: "Bulan berikutnya wajib minimal 30 closing dan kontribusi closing canvassing minimal 70%. Jika gagal, masuk review terminasi." };
+  }
+  if (total < 45 && b3 >= 30 && canvassingLulus) {
+    return { status: "TOLERANSI", alasan: "Total 3 bulan masih kritis, tetapi bulan terakhir mencapai threshold dan kontribusi canvassing memenuhi 70%.",
+      rtl: "Recovery final 1 bulan. Bulan berikutnya minimal 24 closing dan kontribusi closing canvassing minimal 70%." };
+  }
+  if (total < 45 && b3 >= 20 && b3 <= 29 && canvassingLulus) {
+    return { status: "TOLERANSI", alasan: "Total 3 bulan masih kritis, tetapi bulan terakhir menunjukkan perbaikan ke Q2 dan canvassing memenuhi 70%.",
+      rtl: "Bulan berikutnya wajib minimal 30 closing. Jika gagal, masuk review terminasi." };
+  }
+
+  return { status: "TOLERANSI", alasan: "Performa belum memenuhi seluruh syarat Lanjut, tetapi belum masuk kondisi Terminasi.",
+    rtl: "Bulan berikutnya wajib minimal 30 closing dan kontribusi closing canvassing minimal 70%. Masa evaluasi 1 bulan." };
+}
+
+function statusStyle(status) {
+  if (status === "LANJUT") return "bg-gradient-to-br from-emerald-500 to-emerald-600";
+  if (status === "TOLERANSI") return "bg-gradient-to-br from-amber-500 to-amber-600";
+  return "bg-gradient-to-br from-rose-500 to-rose-600";
+}
+
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+  document.getElementById('errorMsg').classList.remove('hidden');
+  document.getElementById('resultWrap').classList.add('hidden');
+}
+
+function hitung() {
+  const b1 = parseInt(document.getElementById('b1').value, 10);
+  const b2 = parseInt(document.getElementById('b2').value, 10);
+  const b3 = parseInt(document.getElementById('b3').value, 10);
+  const canv = parseInt(document.getElementById('canv').value, 10);
+
+  document.getElementById('errorMsg').classList.add('hidden');
+
+  for (const [nama, val] of [["Bulan 1", b1], ["Bulan 2", b2], ["Bulan 3", b3], ["Closing Canvassing", canv]]) {
+    if (Number.isNaN(val)) return showError(`${nama} harus diisi dengan angka.`);
+    if (val < 0) return showError(`${nama} tidak boleh negatif.`);
+  }
+
+  const total = b1 + b2 + b3;
+  if (canv > total) return showError("Closing dari canvassing tidak boleh lebih besar daripada total closing 3 bulan.");
+
+  const kuotaPct = (total / KUOTA_3_BULAN) * 100;
+  const trend = trendScore(b1, b2, b3);
+  const canvPct = canvassingPct(canv, total);
+  const keputusan = tentukanKeputusan(b1, b2, b3, canv);
+
+  document.getElementById('statusBanner').className = "rounded-2xl p-6 text-white " + statusStyle(keputusan.status);
+  document.getElementById('statusText').textContent = keputusan.status;
+  document.getElementById('statusAlasan').textContent = keputusan.alasan;
+
+  document.getElementById('mTotal').textContent = total;
+  document.getElementById('mKuota').textContent = kuotaPct.toFixed(2) + "%";
+  document.getElementById('mTrend').textContent = trend.toFixed(2);
+  document.getElementById('mCanv').textContent = canvPct.toFixed(2) + "%";
+
+  document.getElementById('rQuartil').textContent =
+    `${getQuartil(b1).split(' ')[0]} / ${getQuartil(b2).split(' ')[0]} / ${getQuartil(b3).split(' ')[0]}`;
+  document.getElementById('rZona').textContent = getZona(total);
+  document.getElementById('rArah').textContent = klasifikasiTren(b1, b2, b3);
+  document.getElementById('rGate').textContent = consistencyGate(b1, b2, b3);
+  document.getElementById('rCanvStatus').textContent = canvPct >= MINIMUM_CANVASSING_PCT ? "Lulus" : "Gagal";
+
+  document.getElementById('rtlText').textContent = keputusan.rtl;
+
+  document.getElementById('resultWrap').classList.remove('hidden');
+}
+
+// Tab switching
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('tabBtn-' + tab).classList.add('active');
+  if (tab === 'hitung') hitung();
+}
+
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  html.classList.add('dark');
+}
+themeToggle.addEventListener('click', () => {
+  html.classList.toggle('dark');
+  localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+});
+
+hitung();
+</script>
+
+</body>
+</html>
