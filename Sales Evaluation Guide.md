@@ -289,9 +289,77 @@ Q3-Q3-Q1
 
 Walaupun kedua pola memiliki dua bulan rendah, posisi bulan Q1 sangat memengaruhi interpretasi.
 
+## 5.2 Evaluasi Dua Bulan pada Q3 dan Q4
+
+Selain membaca 3 bulan penuh, sistem juga perlu memberi perhatian khusus pada **dua bulan terbaru** jika keduanya berada di Q3 atau Q4.
+
+Rumus pembacaan dua bulan terbaru:
+
+\[
+B2\ dan\ B3
+\]
+
+Jika:
+
+\[
+B2<20\ dan\ B3<20
+\]
+
+maka dua bulan terbaru masuk area rendah, karena keduanya berada pada Q3 atau Q4.
+
+Contoh:
+
+\[
+52,\ 10,\ 10
+\]
+
+Quartil:
+
+\[
+Q1-Q3-Q3
+\]
+
+Walaupun totalnya:
+
+\[
+52+10+10=72
+\]
+
+sales tidak otomatis aman, karena dua bulan terbaru sama-sama Q3. Artinya performa terbaru sedang lemah dan perlu RTL ketat.
+
+Jika dua bulan terbaru berada di Q4:
+
+\[
+B2<10\ dan\ B3<10
+\]
+
+maka risikonya lebih tinggi daripada Q3-Q3, karena dua bulan terakhir berada pada kondisi kritis.
+
+Contoh:
+
+\[
+35,\ 8,\ 8
+\]
+
+Quartil:
+
+\[
+Q1-Q4-Q4
+\]
+
+Artinya sales pernah tinggi, tetapi dua bulan terbaru kritis. Kondisi ini tidak boleh dibaca sebagai performa aman hanya karena Bulan 1 tinggi.
+
+Ringkasnya:
+
+| Pola Dua Bulan Terbaru | Kondisi | Makna |
+|---|---|---|
+| Q3-Q3 | B2 10–19 dan B3 10–19 | Performa terbaru rendah, perlu toleransi/RTL ketat |
+| Q3-Q4 atau Q4-Q3 | Salah satu bulan Q3 dan satu bulan Q4 | Performa terbaru memburuk atau tidak stabil |
+| Q4-Q4 | B2 <10 dan B3 <10 | Dua bulan terbaru kritis, risiko terminasi lebih tinggi |
+
 ---
 
-# 6. Rumus Utama
+# 6. Rumus Utamajytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjyjytjytjyjytjytjytjytjytjytjytjytjytjyjytjytjytjytjytjytjytjytjytjytjytjytjytjytjy
 
 ## 6.1 Total Closing 3 Bulan
 
@@ -477,6 +545,121 @@ B1<10,\ B2<10,\ B3<10
 \]
 
 Ini adalah kondisi kritis.
+
+---
+
+# 9A. Kapan Sistem Menggunakan Window 2 Bulan vs 3 Bulan
+
+Evaluasi tidak selalu menggunakan ketiga bulan secara setara. Sistem menggunakan dua jenis window secara bersamaan, masing-masing dengan tujuan yang berbeda.
+
+## 9A.1 Perbedaan Fungsi
+
+| Window | Data yang Dilihat | Tujuan |
+|---|---|---|
+| 3 bulan (kumulatif) | B1 + B2 + B3 | Mengukur pencapaian total terhadap kuota |
+| 3 bulan (konsistensi) | Pola B1, B2, B3 | Mendeteksi pola rendah yang berulang di seluruh periode |
+| 2 bulan terbaru | B2 dan B3 | Mendeteksi penurunan performa terbaru yang tersembunyi oleh B1 |
+
+Keduanya dijalankan bersama pada setiap evaluasi. Sistem tidak memilih salah satu; hasil dari keduanya digabungkan untuk menentukan status akhir.
+
+## 9A.2 Kapan Window 3 Bulan Digunakan
+
+Window 3 bulan digunakan untuk:
+
+**a. Menghitung total kumulatif dan zona**
+
+\[
+Total = B1 + B2 + B3
+\]
+
+Zona ditentukan dari total ini:
+- ≥ 63 → Lulus kuota kumulatif
+- 45–62 → Zona toleransi/recovery
+- < 45 → Zona kritis
+
+**b. Mendeteksi pola konsisten selama 3 bulan**
+
+Sistem memeriksa apakah pola rendah terjadi di seluruh periode:
+
+- Tiga bulan Q4: B1 < 10 dan B2 < 10 dan B3 < 10
+- Tiga bulan di bawah 20: B1 < 20 dan B2 < 20 dan B3 < 20
+- Tidak ada bulan mencapai 30: B1 < 30 dan B2 < 30 dan B3 < 30
+
+Contoh yang memicu window 3 bulan:
+
+\[
+15,\ 15,\ 15
+\]
+
+Semua bulan Q3. Sistem membaca ini sebagai pola rendah berkepanjangan, bukan penurunan mendadak.
+
+## 9A.3 Kapan Window 2 Bulan Terbaru Digunakan
+
+Window 2 bulan terbaru (B2 dan B3) digunakan secara khusus untuk **mendeteksi penurunan performa terbaru** yang tidak terdeteksi oleh total kumulatif.
+
+Kondisi yang memicu pemeriksaan 2 bulan terbaru:
+
+\[
+B2 < 20 \text{ dan } B3 < 20
+\]
+
+Ini berarti dua bulan terbaru berada di Q3 atau Q4, terlepas dari berapa nilai B1.
+
+Contoh paling jelas:
+
+\[
+52,\ 10,\ 10
+\]
+
+- Total: 72 → lulus kuota kumulatif
+- Namun B2 = 10 dan B3 = 10, keduanya < 20
+- Window 2 bulan terpicu → status tidak otomatis Lanjut
+- Hasil: Toleransi dengan RTL wajib 30
+
+Jika window 2 bulan tidak ada, sales dengan pola `52, 10, 10` bisa dianggap aman hanya karena totalnya tinggi.
+
+## 9A.4 Mengapa Dua Window Dijalankan Bersama
+
+Satu window tidak cukup untuk mendeteksi semua masalah.
+
+**Jika hanya menggunakan 3 bulan kumulatif:**
+
+Pola `52, 10, 10` total 72, terlihat aman. Penurunan 2 bulan terbaru tidak terdeteksi.
+
+**Jika hanya menggunakan 2 bulan terbaru:**
+
+Pola `10, 10, 30` dua bulan terakhirnya 10 dan 30. Window 2 bulan menunjukkan B2 = 10 < 20, tetapi B3 = 30 ≥ 20 sehingga kondisi B2 < 20 dan B3 < 20 tidak terpenuhi. Jika hanya melihat B2 dan B3 tanpa total, evaluasi kurang lengkap karena total hanya 50.
+
+**Dengan dua window berjalan bersama:**
+
+Sistem dapat membedakan:
+
+| Pola | Total | Window 2 Bln | Window 3 Bln | Hasil |
+|---|---:|---|---|---|
+| 52, 10, 10 | 72 | B2 dan B3 < 20 → Toleransi | Tidak ada pola 3 bln buruk | Toleransi |
+| 10, 10, 30 | 50 | B3 ≥ 20, tidak terpicu | Total < 63 → zona toleransi | Toleransi |
+| 25, 25, 25 | 75 | B3 ≥ 20, tidak terpicu | Tidak ada bln ≥ 30 → gate gagal | Toleransi |
+| 15, 15, 15 | 45 | B3 ≥ 20, tidak terpicu | Semua < 20 → pola 3 bln buruk | Toleransi / Terminasi |
+| 8, 8, 8 | 24 | B2 dan B3 < 10 | Semua < 10 → Q4 tiga bln | Terminasi |
+
+## 9A.5 Ringkasan Aturan Pemilihan Window
+
+```
+Setiap evaluasi selalu menjalankan:
+
+1. Window 3 bulan kumulatif → menentukan zona (lulus / toleransi / kritis)
+2. Window 3 bulan pola → Consistency Gate (Q4 tiga bln, di bawah 20 tiga bln, tidak ada bln ≥ 30)
+3. Window 2 bulan terbaru → mendeteksi penurunan tersembunyi (B2 < 20 dan B3 < 20)
+
+Jika window 2 bulan terbaru terpicu (B2 < 20 dan B3 < 20):
+→ Status tidak bisa Lanjut, meskipun total ≥ 63
+
+Jika window 3 bulan pola terpicu (misalnya tiga bulan Q4):
+→ Status langsung Terminasi
+
+Jika hanya window kumulatif yang terpenuhi:
+→ Status bergantung pada zona, bulan terbaru, dan canvassing
+```
 
 ---
 
