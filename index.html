@@ -138,6 +138,8 @@ details[open] > summary::after { content: '\2212'; }
                 <tr><td class="py-2.5 text-stone-500 dark:text-stone-400 w-1/2">Quartil Bulan 1 / 2 / 3</td><td id="rQuartil" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
                 <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Zona Total 3 Bulan</td><td id="rZona" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
                 <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Arah Tren</td><td id="rArah" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Evaluasi 2 Bulan Terbaru</td><td id="rWindow2" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
+                <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Evaluasi 3 Bulan</td><td id="rWindow3" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
                 <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Consistency Gate</td><td id="rGate" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
                 <tr><td class="py-2.5 text-stone-500 dark:text-stone-400">Status Canvassing</td><td id="rCanvStatus" class="py-2.5 font-medium text-stone-900 dark:text-stone-100 text-right"></td></tr>
               </tbody>
@@ -468,8 +470,10 @@ details[open] > summary::after { content: '\2212'; }
               <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">45-62</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Recovery</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
               <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">45-62</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Q2/Q3</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
               <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;30</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Recovery</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Toleransi</span></td></tr>
-              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;20</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Rendah</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&#x2265;70%</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
-              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">Berapa pun</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;10</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">3 bln Q4</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Berapa pun</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">&lt;20</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Window 2 bulan: B3 rendah</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Berapa pun</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Semua &lt;20</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Window 3 bulan: rendah semua</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Berapa pun</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">Berapa pun</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">B1/B2/B3 &lt;10</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Window 3 bulan: Q4 semua</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Berapa pun</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
+              <tr><td class="py-2 pr-3 font-medium text-stone-900 dark:text-stone-100">&lt;45</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">B2/B3 &lt;10</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Window 2 bulan: Q4-Q4 + zona kritis</td><td class="py-2 pr-3 text-stone-600 dark:text-stone-400">Berapa pun</td><td class="py-2"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Terminasi</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -554,11 +558,26 @@ function klasifikasiTren(b1, b2, b3) {
   return "Fluktuatif";
 }
 
+function evaluasiWindow2(b2, b3) {
+  if (b2 < 10 && b3 < 10) return "2 bulan Q4-Q4 (kritis)";
+  if (b2 < 20 && b3 < 20) return "2 bulan Q3/Q4 (rendah)";
+  return "Tidak terpicu";
+}
+
+function evaluasiWindow3(b1, b2, b3) {
+  if (b1 < 10 && b2 < 10 && b3 < 10) return "3 bulan Q4 (kritis)";
+  if (b1 < 20 && b2 < 20 && b3 < 20) return "3 bulan di bawah 20";
+  if (b1 < 30 && b2 < 30 && b3 < 30) return "Tidak ada bulan mencapai 30";
+  return "Tidak terpicu";
+}
+
 function consistencyGate(b1, b2, b3) {
-  if (b1 < 10 && b2 < 10 && b3 < 10) return "Gagal Kritis: 3 bulan berturut-turut Q4";
-  if (b1 < 20 && b2 < 20 && b3 < 20) return "Gagal Berat: 3 bulan berturut-turut di bawah 20";
-  if (b2 < 20 && b3 < 20) return "Gagal: 2 bulan terakhir di bawah 20";
-  if (b1 < 30 && b2 < 30 && b3 < 30) return "Gagal Monthly Target Gate: tidak ada bulan mencapai 30";
+  const window3 = evaluasiWindow3(b1, b2, b3);
+  const window2 = evaluasiWindow2(b2, b3);
+  if (window3 === "3 bulan Q4 (kritis)") return "Gagal Kritis: 3 bulan berturut-turut Q4";
+  if (window3 === "3 bulan di bawah 20") return "Gagal Berat: 3 bulan berturut-turut di bawah 20";
+  if (window2 !== "Tidak terpicu") return "Gagal: 2 bulan terakhir di bawah 20";
+  if (window3 === "Tidak ada bulan mencapai 30") return "Gagal Monthly Target Gate: tidak ada bulan mencapai 30";
   return "Lulus";
 }
 
@@ -570,10 +589,15 @@ function tentukanKeputusan(b1, b2, b3, canv) {
   const duaBulanTerakhirDiBawah20 = b2 < 20 && b3 < 20;
   const tigaBulanDiBawah20 = b1 < 20 && b2 < 20 && b3 < 20;
   const tigaBulanQ4 = b1 < 10 && b2 < 10 && b3 < 10;
+  const duaBulanTerakhirQ4 = b2 < 10 && b3 < 10;
   const recoveryBulanTerakhir = b3 >= 30 && b3 > b2;
 
   if (tigaBulanQ4) {
     return { status: "TERMINASI", alasan: "Tiga bulan berturut-turut berada di Q4 atau di bawah 10 closing.",
+      rtl: "Tidak ada RTL perbaikan. Lanjutkan review terminasi sesuai proses HR dan ketentuan perusahaan." };
+  }
+  if (duaBulanTerakhirQ4 && total < 45) {
+    return { status: "TERMINASI", alasan: "Dua bulan terbaru berada di Q4 dan total 3 bulan berada di zona kritis.",
       rtl: "Tidak ada RTL perbaikan. Lanjutkan review terminasi sesuai proses HR dan ketentuan perusahaan." };
   }
   if (total < 45 && tigaBulanDiBawah20) {
@@ -677,6 +701,8 @@ function hitung() {
     `${getQuartil(b1).split(' ')[0]} / ${getQuartil(b2).split(' ')[0]} / ${getQuartil(b3).split(' ')[0]}`;
   document.getElementById('rZona').textContent = getZona(total);
   document.getElementById('rArah').textContent = klasifikasiTren(b1, b2, b3);
+  document.getElementById('rWindow2').textContent = evaluasiWindow2(b2, b3);
+  document.getElementById('rWindow3').textContent = evaluasiWindow3(b1, b2, b3);
   document.getElementById('rGate').textContent = consistencyGate(b1, b2, b3);
   document.getElementById('rCanvStatus').textContent = canvPct >= MINIMUM_CANVASSING_PCT ? "Lulus" : "Gagal";
 

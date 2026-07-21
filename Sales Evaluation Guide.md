@@ -359,7 +359,7 @@ Ringkasnya:
 
 ---
 
-# 6. Rumus Utamaytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjytjyjytjytjyjytjytjytjytjytjytjytjytjytjyjytjytjytjytjytjytjytjytjytjytjytjytjytjytjy
+# 6. Rumus Utama
 
 ## 6.1 Total Closing 3 Bulan
 
@@ -981,6 +981,26 @@ dan:
 B3<20
 \]
 
+## D. Dua Bulan Terbaru Q4 dan Total Kritis
+
+Kondisi ini menggunakan window 2 bulan terbaru.
+
+\[
+B2<10
+\]
+
+\[
+B3<10
+\]
+
+dan:
+
+\[
+Total<45
+\]
+
+Artinya dua bulan terbaru berada di Q4 dan total 3 bulan juga berada di zona kritis. Ini menunjukkan performa terbaru sangat lemah dan tidak cukup ditolong oleh bulan pertama.
+
 ## RTL Terminasi
 
 Tidak ada target recovery baru.
@@ -1012,8 +1032,10 @@ Tindakan:
 | 45–62 | 10–19 | Q3 | Berapa pun | Toleransi | Wajib 30 |
 | <45 | ≥30 | Recovery kuat | ≥70% | Toleransi | Recovery final, minimal 24 |
 | <45 | 20–29 | Perbaikan | ≥70% | Toleransi | Wajib 30 |
-| <45 | <20 | Kritis | Berapa pun | Terminasi | Tidak ada RTL |
-| Berapa pun | Berapa pun | Q4 tiga bulan | Berapa pun | Terminasi | Tidak ada RTL |
+| <45 | <20 | Window 2 bulan: B3 rendah | Berapa pun | Terminasi | Tidak ada RTL |
+| <45 | Semua <20 | Window 3 bulan: rendah semua | Berapa pun | Terminasi | Tidak ada RTL |
+| <45 | B2 dan B3 <10 | Window 2 bulan: Q4-Q4 + zona kritis | Berapa pun | Terminasi | Tidak ada RTL |
+| Berapa pun | Berapa pun | Window 3 bulan: Q4 tiga bulan | Berapa pun | Terminasi | Tidak ada RTL |
 
 ---
 
