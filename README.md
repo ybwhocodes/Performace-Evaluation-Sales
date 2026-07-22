@@ -25,7 +25,12 @@ Status = Rolling 3 Bulan + Quartil + Consistency Gate + Trend Score + Closing Ca
 |---|---:|
 | Threshold closing bulanan | 30 |
 | Kuota penuh 3 bulan | 90 |
-| Minimum kuota kumulatif | 63 (70%) |
+| Lanjut Produktif | ≥120 + semua Q1 |
+| Lanjut Konsisten | ≥90 + semua Q1 |
+| Lanjut Kumulatif | ≥90 + minimal Q2 |
+| Toleransi Kuota Kumulatif | ≥75 |
+| Zona Recovery / Toleransi | ≥60 |
+| Zona Kritis | <60 |
 | Minimum canvassing | 70% |
 | Bobot trend (B1 / B2 / B3) | 10% / 20% / 70% |
 

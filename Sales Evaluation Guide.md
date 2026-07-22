@@ -89,7 +89,7 @@ Contoh:
 52+10+10=72
 \]
 
-Total 72 sudah melewati minimum 63. Namun, dua bulan terakhir hanya menghasilkan 10 closing.
+Total 72 sudah melewati batas zona recovery/toleransi lama. Namun, dua bulan terakhir hanya menghasilkan 10 closing.
 
 Jika perusahaan hanya menggunakan total, sales akan terlihat aman meskipun performa terbarunya menurun tajam.
 
@@ -167,9 +167,13 @@ Walaupun 83,33% berasal dari canvassing, total closing masih sangat rendah. Sale
 |---|---:|
 | Threshold closing bulanan | 30 |
 | Periode evaluasi | 3 bulan |
-| Kuota penuh 3 bulan | 90 |
-| Minimum kuota 3 bulan | 63 |
-| Minimum kuota dalam persen | 70% |
+| Kuota dasar 3 bulan | 90 |
+| Lanjut Produktif | Total ≥120 dan semua bulan Q1 |
+| Lanjut Konsisten | Total ≥90 dan semua bulan Q1 |
+| Lanjut Kumulatif | Total ≥90 dan semua bulan minimal Q2 |
+| Toleransi Kuota Kumulatif | Total ≥75 |
+| Zona Recovery / Toleransi | Total ≥60 |
+| Zona Kritis | Total <60 |
 | Minimum kontribusi closing canvassing | 70% |
 | Target recovery ringan | 24 |
 | Bobot Bulan 1 | 10% |
@@ -190,10 +194,22 @@ Kuota penuh 3 bulan:
 30\times3=90
 \]
 
-Minimum pencapaian 70%:
+Batas evaluasi terbaru:
 
 \[
-90\times70\%=63
+Lanjut\ Produktif \geq 120
+\]
+
+\[
+Lanjut\ Konsisten/Kumulatif \geq 90
+\]
+
+\[
+Toleransi\ Kuota\ Kumulatif \geq 75
+\]
+
+\[
+Zona\ Recovery/Toleransi \geq 60
 \]
 
 Target recovery ringan:
@@ -357,6 +373,32 @@ Ringkasnya:
 | Q3-Q4 atau Q4-Q3 | Salah satu bulan Q3 dan satu bulan Q4 | Performa terbaru memburuk atau tidak stabil |
 | Q4-Q4 | B2 <10 dan B3 <10 | Dua bulan terbaru kritis, risiko terminasi lebih tinggi |
 
+## 5.3 Aturan Recovery Setelah Bulan 1 Q3/Q4
+
+Jika Bulan 1 berada di Q3 atau Q4, maka Bulan 2 dan Bulan 3 harus menunjukkan recovery bertahap.
+
+| Kondisi | Evaluasi |
+|---|---|
+| B1 Q3/Q4, B2 minimal Q2, B3 Q1 | Masih Toleransi karena recovery selesai |
+| B1 Q3/Q4, B2 masih Q3/Q4 | Terminasi karena tidak ada recovery awal |
+| B1 Q3/Q4, B2 minimal Q2, B3 belum Q1 | Terminasi karena recovery tidak selesai |
+
+Contoh toleransi:
+
+\[
+10,\ 20,\ 30
+\]
+
+Bulan 1 rendah, Bulan 2 naik ke Q2, Bulan 3 masuk Q1.
+
+Contoh terminasi:
+
+\[
+10,\ 20,\ 25
+\]
+
+Bulan 2 sudah naik ke Q2, tetapi Bulan 3 belum Q1 sehingga recovery tidak selesai.
+
 ---
 
 # 6. Rumus Utama
@@ -410,26 +452,25 @@ Canvassing\%=0\%
 
 # 7. Zona Total Closing 3 Bulan
 
-| Total Closing | Persentase Kuota | Zona |
-|---:|---:|---|
-| ≥63 | ≥70% | Lulus kuota kumulatif |
-| 45–62 | 50%–69,99% | Zona toleransi/recovery |
-| <45 | <50% | Zona kritis |
+| Total Closing | Syarat Pola | Zona / Status |
+|---:|---|---|
+| ≥120 | Semua bulan Q1 | Lanjut Produktif |
+| ≥90 | Semua bulan Q1 | Lanjut Konsisten |
+| ≥90 | Semua bulan minimal Q2 | Lanjut Kumulatif |
+| ≥75 | Belum memenuhi syarat lanjut | Toleransi Kuota Kumulatif |
+| ≥60 | Belum memenuhi kuota kumulatif | Zona Recovery / Toleransi |
+| <60 | Kritis | Zona Kritis |
 
-## 7.1 Alasan Batas 45
+## 7.1 Alasan Batas Baru
 
-Nilai 45 sama dengan 50% dari kuota penuh 90:
+Batas zona diperbarui agar total tinggi tidak otomatis dianggap aman tanpa membaca pola quartil bulanan.
 
-\[
-90\times50\%=45
-\]
-
-Batas ini digunakan untuk membedakan antara:
-
-- Performa yang masih mendekati level pemulihan
-- Performa yang sudah terlalu jauh dari kuota
-
-Batas 45 adalah rule kebijakan internal dan perlu divalidasi menggunakan data historis.
+- ≥120 hanya Lanjut Produktif jika seluruh bulan Q1.
+- ≥90 menjadi Lanjut Konsisten jika seluruh bulan Q1.
+- ≥90 menjadi Lanjut Kumulatif jika seluruh bulan minimal Q2.
+- ≥75 masih diberi Toleransi Kuota Kumulatif jika belum memenuhi syarat lanjut.
+- ≥60 masuk Zona Recovery / Toleransi.
+- <60 masuk Zona Kritis.
 
 ---
 
@@ -572,10 +613,13 @@ Window 3 bulan digunakan untuk:
 Total = B1 + B2 + B3
 \]
 
-Zona ditentukan dari total ini:
-- ≥ 63 → Lulus kuota kumulatif
-- 45–62 → Zona toleransi/recovery
-- < 45 → Zona kritis
+Zona ditentukan dari total dan pola quartil:
+- ≥120 + semua Q1 → Lanjut Produktif
+- ≥90 + semua Q1 → Lanjut Konsisten
+- ≥90 + semua minimal Q2 → Lanjut Kumulatif
+- ≥75 → Toleransi Kuota Kumulatif
+- ≥60 → Zona Recovery / Toleransi
+- <60 → Zona Kritis
 
 **b. Mendeteksi pola konsisten selama 3 bulan**
 
@@ -637,7 +681,7 @@ Sistem dapat membedakan:
 | Pola | Total | Window 2 Bln | Window 3 Bln | Hasil |
 |---|---:|---|---|---|
 | 52, 10, 10 | 72 | B2 dan B3 < 20 → Toleransi | Tidak ada pola 3 bln buruk | Toleransi |
-| 10, 10, 30 | 50 | B3 ≥ 20, tidak terpicu | Total < 63 → zona toleransi | Toleransi |
+| 10, 10, 30 | 50 | B3 ≥ 20, tidak terpicu | Total < 60 → zona kritis | Toleransi/Terminasi sesuai rule terbaru |
 | 25, 25, 25 | 75 | B3 ≥ 20, tidak terpicu | Tidak ada bln ≥ 30 → gate gagal | Toleransi |
 | 15, 15, 15 | 45 | B3 ≥ 20, tidak terpicu | Semua < 20 → pola 3 bln buruk | Toleransi / Terminasi |
 | 8, 8, 8 | 24 | B2 dan B3 < 10 | Semua < 10 → Q4 tiga bln | Terminasi |
@@ -652,7 +696,7 @@ Setiap evaluasi selalu menjalankan:
 3. Window 2 bulan terbaru → mendeteksi penurunan tersembunyi (B2 < 20 dan B3 < 20)
 
 Jika window 2 bulan terbaru terpicu (B2 < 20 dan B3 < 20):
-→ Status tidak bisa Lanjut, meskipun total ≥ 63
+→ Status tidak bisa Lanjut jika pola recovery tidak selesai
 
 Jika window 3 bulan pola terpicu (misalnya tiga bulan Q4):
 → Status langsung Terminasi
@@ -667,47 +711,31 @@ Jika hanya window kumulatif yang terpenuhi:
 
 # 10.1 Status Lanjut
 
-## Persyaratan
+## Persyaratan Terbaru
 
-Sales masuk status Lanjut jika:
+Status Lanjut dibagi menjadi tiga kategori:
 
-\[
-Total\geq63
-\]
-
-dan:
-
-\[
-\max(B1,B2,B3)\geq30
-\]
-
-dan:
-
-\[
-Canvassing\%\geq70\%
-\]
-
-dan bukan kondisi:
-
-\[
-B2<20 \text{ dan } B3<20
-\]
+| Status | Syarat Total | Syarat Quartil | Canvassing |
+|---|---:|---|---:|
+| Lanjut Produktif | ≥120 | Semua bulan Q1 | ≥70% |
+| Lanjut Konsisten | ≥90 | Semua bulan Q1 | ≥70% |
+| Lanjut Kumulatif | ≥90 | Semua bulan minimal Q2 | ≥70% |
 
 ## Arti
 
-Sales memenuhi standar kumulatif, pernah mencapai target bulanan, memiliki kontribusi canvassing yang cukup, dan tidak menunjukkan pola penurunan berat terbaru.
+Sales memenuhi standar kumulatif dan pola quartil bulanan cukup kuat. Total tinggi tetap harus dibaca bersama pola bulanannya.
 
 ## RTL Lanjut
 
 - Pertahankan minimal 30 closing per bulan.
 - Pertahankan canvassing minimal 70%.
-- Tetap dilakukan monitoring rutin.
+- Naikkan bulan Q2 menjadi Q1 untuk kasus Lanjut Kumulatif.
 
 ---
 
 # 10.2 Status Toleransi
 
-Toleransi diberikan ketika performa belum memenuhi semua syarat Lanjut tetapi belum memenuhi kondisi Terminasi.
+Toleransi diberikan ketika performa belum memenuhi semua syarat Lanjut tetapi belum memenuhi kondisi Terminasi. Pada aturan terbaru, Toleransi terutama muncul pada total ≥75 (Toleransi Kuota Kumulatif), total ≥60 (Zona Recovery / Toleransi), atau pola recovery B1 rendah → B2 minimal Q2 → B3 Q1.
 
 Toleransi bukan berarti sales aman.
 
@@ -726,7 +754,7 @@ Praktik performance management yang efektif menekankan target yang jelas, feedba
 ### Persyaratan
 
 \[
-45\leq Total\leq62
+60\leq Total<75
 \]
 
 \[
@@ -774,7 +802,7 @@ Target 24 bukan standar permanen. Ini hanya target mempertahankan momentum perba
 ### Persyaratan
 
 \[
-45\leq Total\leq62
+60\leq Total<75
 \]
 
 \[
@@ -804,7 +832,7 @@ Sales harus memperbaiki hasil sekaligus sumber closing.
 ### Persyaratan
 
 \[
-Total\geq63
+Total\geq75
 \]
 
 dan:
@@ -834,7 +862,7 @@ Total kumulatif cukup, tetapi target bulanan tidak pernah tercapai selama tiga b
 ### Persyaratan
 
 \[
-Total\geq63
+Total\geq75
 \]
 
 \[
@@ -866,7 +894,7 @@ Satu bulan tinggi di masa lalu tidak boleh menutupi dua bulan terbaru yang renda
 ### Persyaratan
 
 \[
-Total\geq63
+Total\geq75
 \]
 
 \[
@@ -889,7 +917,7 @@ Canvassing\%\geq70\%
 
 ---
 
-## F. Stabil Q2 tetapi Total Belum Mencapai 63
+## F. Stabil Q2 tetapi Belum Memenuhi Syarat Lanjut
 
 Contoh:
 
@@ -920,7 +948,7 @@ Performa stabil, tetapi stabil pada level di bawah target bukan berarti sudah me
 ### Persyaratan
 
 \[
-Total<45
+Total<60
 \]
 
 \[
@@ -957,10 +985,10 @@ Status Terminasi pada aplikasi harus dipahami sebagai:
 B1<10,\ B2<10,\ B3<10
 \]
 
-## B. Total di Bawah 45 dan Semua Bulan di Bawah 20
+## B. Total di Bawah 60 dan Semua Bulan di Bawah 20
 
 \[
-Total<45
+Total<60
 \]
 
 dan:
@@ -969,10 +997,10 @@ dan:
 B1<20,\ B2<20,\ B3<20
 \]
 
-## C. Total di Bawah 45 dan Bulan Terbaru Masih di Bawah 20
+## C. Total di Bawah 60 dan Bulan Terbaru Masih di Bawah 20
 
 \[
-Total<45
+Total<60
 \]
 
 dan:
@@ -996,7 +1024,7 @@ B3<10
 dan:
 
 \[
-Total<45
+Total<60
 \]
 
 Artinya dua bulan terbaru berada di Q4 dan total 3 bulan juga berada di zona kritis. Ini menunjukkan performa terbaru sangat lemah dan tidak cukup ditolong oleh bulan pertama.
@@ -1020,22 +1048,18 @@ Tindakan:
 
 # 11. Matriks Keputusan Lengkap
 
-| Total | B3 | Pola | Canvassing | Status | RTL |
-|---:|---:|---|---:|---|---|
-| ≥63 | ≥30 | Tidak kritis | ≥70% | Lanjut | Pertahankan 30 |
-| ≥63 | ≥30 | Tidak kritis | <70% | Toleransi | 30 dan canvassing ≥70% |
-| ≥63 | <30 | Tidak pernah mencapai 30 | ≥70% | Toleransi | Wajib 30 |
-| ≥63 | <20 | Dua bulan terbaru <20 | Berapa pun | Toleransi | Wajib 30 |
-| 45–62 | ≥30 | Recovery | ≥70% | Toleransi | Minimal 24 |
-| 45–62 | ≥30 | Recovery | <70% | Toleransi | Wajib 30 |
-| 45–62 | 20–29 | Q2 | Berapa pun | Toleransi | Wajib 30 |
-| 45–62 | 10–19 | Q3 | Berapa pun | Toleransi | Wajib 30 |
-| <45 | ≥30 | Recovery kuat | ≥70% | Toleransi | Recovery final, minimal 24 |
-| <45 | 20–29 | Perbaikan | ≥70% | Toleransi | Wajib 30 |
-| <45 | <20 | Window 2 bulan: B3 rendah | Berapa pun | Terminasi | Tidak ada RTL |
-| <45 | Semua <20 | Window 3 bulan: rendah semua | Berapa pun | Terminasi | Tidak ada RTL |
-| <45 | B2 dan B3 <10 | Window 2 bulan: Q4-Q4 + zona kritis | Berapa pun | Terminasi | Tidak ada RTL |
-| Berapa pun | Berapa pun | Window 3 bulan: Q4 tiga bulan | Berapa pun | Terminasi | Tidak ada RTL |
+| Total | Pola | Canvassing | Status | RTL |
+|---:|---|---:|---|---|
+| ≥120 | Semua Q1 | ≥70% | Lanjut Produktif | Pertahankan produktivitas |
+| ≥90 | Semua Q1 | ≥70% | Lanjut Konsisten | Pertahankan 30/bln |
+| ≥90 | Semua minimal Q2 | ≥70% | Lanjut Kumulatif | Naikkan Q2 ke Q1 |
+| ≥75 | Belum memenuhi syarat lanjut | Berapa pun | Toleransi Kuota Kumulatif | Wajib 30 bulan berikutnya |
+| ≥60 | Recovery / belum memenuhi kuota | Berapa pun | Toleransi | Wajib 30 bulan berikutnya |
+| <60 | Zona kritis | Berapa pun | Terminasi | Tidak ada RTL |
+| Berapa pun | B1 Q3/Q4, B2 Q3/Q4 | Berapa pun | Terminasi | Tidak ada RTL |
+| Berapa pun | B1 Q3/Q4, B2 minimal Q2, B3 belum Q1 | Berapa pun | Terminasi | Tidak ada RTL |
+| Berapa pun | B1 Q3/Q4, B2 minimal Q2, B3 Q1 | ≥70% | Toleransi | Evaluasi 1 bulan |
+| Berapa pun | Tiga bulan Q4 | Berapa pun | Terminasi | Tidak ada RTL |
 
 ---
 
@@ -1154,7 +1178,7 @@ Q3-Q3-Q1
 
 ### Alasan
 
-- Total belum mencapai 63
+- Total belum mencapai batas lanjut
 - Bulan terbaru mencapai target
 - Tren recovery
 - Canvassing memenuhi syarat
@@ -1273,7 +1297,7 @@ Q3-Q3-Q3
 
 ### Alasan
 
-- Total di bawah 45
+- Total di bawah 60
 - Seluruh bulan di bawah 20
 - Tidak ada bukti recovery
 
@@ -1528,6 +1552,6 @@ Metode menggabungkan:
 - Kontribusi canvassing
 - RTL yang terukur
 
-Namun, beberapa angka seperti bobot 10%-20%-70%, batas 45, target recovery 24, dan canvassing 70% adalah desain kebijakan internal. Angka tersebut perlu divalidasi menggunakan data historis perusahaan.
+Namun, beberapa angka seperti bobot 10%-20%-70%, batas 60, target recovery 24, dan canvassing 70% adalah desain kebijakan internal. Angka tersebut perlu divalidasi menggunakan data historis perusahaan.
 
 Aplikasi sebaiknya digunakan sebagai decision support system, bukan pengganti review manajerial dan HR.
