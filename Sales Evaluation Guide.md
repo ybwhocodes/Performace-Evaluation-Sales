@@ -175,6 +175,7 @@ Walaupun 83,33% berasal dari canvassing, total closing masih sangat rendah. Sale
 | Zona Recovery / Toleransi | Total ≥60 |
 | Zona Kritis | Total <60 |
 | Minimum kontribusi closing canvassing | 70% |
+| Batas penurunan signifikan | >7 closing dari bulan Q2/Q3/Q4 ke bulan berikutnya |
 | Target recovery ringan | 24 |
 | Bobot Bulan 1 | 10% |
 | Bobot Bulan 2 | 20% |
@@ -222,14 +223,18 @@ Target recovery ringan:
 
 # 4. Input Aplikasi
 
-Aplikasi menerima empat input:
+Aplikasi memakai skema progresif:
+
+1. Isi Bulan 1 dan Bulan 2 lebih dulu.
+2. Jika Bulan 1 dan Bulan 2 berturut-turut berada di Q3/Q4 (`B1 < 20` dan `B2 < 20`), evaluasi berhenti di skema 2 bulan.
+3. Jika tidak, field Bulan 3 muncul dan evaluasi final memakai skema 3 bulan.
 
 | Input | Penjelasan |
 |---|---|
 | Bulan 1 | Total closing bulan pertama |
 | Bulan 2 | Total closing bulan kedua |
-| Bulan 3 | Total closing bulan ketiga atau bulan terbaru |
-| Closing canvassing | Total closing selama 3 bulan yang berasal dari aktivitas canvassing |
+| Bulan 3 | Muncul hanya jika lolos skema 2 bulan |
+| Closing canvassing | Total closing selama periode evaluasi yang aktif |
 
 ## 4.1 Validasi Input
 
@@ -375,12 +380,12 @@ Ringkasnya:
 
 ## 5.3 Aturan Recovery Setelah Bulan 1 Q3/Q4
 
-Jika Bulan 1 berada di Q3 atau Q4, maka Bulan 2 dan Bulan 3 harus menunjukkan recovery bertahap.
+Jika Bulan 1 berada di Q3 atau Q4, Bulan 2 menjadi gate awal.
 
 | Kondisi | Evaluasi |
 |---|---|
+| B1 Q3/Q4, B2 masih Q3/Q4 | Terminasi di skema 2 bulan. Bulan 3 tidak dibuka |
 | B1 Q3/Q4, B2 minimal Q2, B3 Q1 | Masih Toleransi karena recovery selesai |
-| B1 Q3/Q4, B2 masih Q3/Q4 | Terminasi karena tidak ada recovery awal |
 | B1 Q3/Q4, B2 minimal Q2, B3 belum Q1 | Terminasi karena recovery tidak selesai |
 
 Contoh toleransi:
@@ -573,13 +578,35 @@ Contoh:
 52,\ 10,\ 10
 \]
 
-## 9.3 Tiga Bulan di Bawah 20
+## 9.3 Penurunan Signifikan
+
+Aturan ini berlaku jika bulan awal berada di Q2, Q3, atau Q4.
+
+\[
+Bulan\ awal<30
+\]
+
+\[
+Bulan\ awal - Bulan\ berikutnya > 7
+\]
+
+Jika terpenuhi pada `B1 → B2` atau `B2 → B3`, status menjadi **Terminasi**.
+
+Contoh:
+
+\[
+28,\ 20
+\]
+
+Bulan 1 Q2, turun 8 closing pada Bulan 2, maka Terminasi.
+
+## 9.4 Tiga Bulan di Bawah 20
 
 \[
 B1<20,\ B2<20,\ B3<20
 \]
 
-## 9.4 Tiga Bulan Q4
+## 9.5 Tiga Bulan Q4
 
 \[
 B1<10,\ B2<10,\ B3<10
@@ -591,17 +618,18 @@ Ini adalah kondisi kritis.
 
 # 9A. Kapan Sistem Menggunakan Window 2 Bulan vs 3 Bulan
 
-Evaluasi tidak selalu menggunakan ketiga bulan secara setara. Sistem menggunakan dua jenis window secara bersamaan, masing-masing dengan tujuan yang berbeda.
+Evaluasi tidak selalu menggunakan ketiga bulan secara setara. Sistem menghitung 2 bulan awal lebih dulu, lalu membuka 3 bulan hanya jika gate awal lulus.
 
 ## 9A.1 Perbedaan Fungsi
 
 | Window | Data yang Dilihat | Tujuan |
 |---|---|---|
-| 3 bulan (kumulatif) | B1 + B2 + B3 | Mengukur pencapaian total terhadap kuota |
+| 2 bulan awal | B1 dan B2 | Gate awal. Jika keduanya Q3/Q4 atau turun >7 dari bulan non-Q1, evaluasi berhenti tanpa Bulan 3 |
+| 3 bulan (kumulatif) | B1 + B2 + B3 | Mengukur pencapaian total terhadap kuota setelah gate awal lulus |
 | 3 bulan (konsistensi) | Pola B1, B2, B3 | Mendeteksi pola rendah yang berulang di seluruh periode |
 | 2 bulan terbaru | B2 dan B3 | Mendeteksi penurunan performa terbaru yang tersembunyi oleh B1 |
 
-Keduanya dijalankan bersama pada setiap evaluasi. Sistem tidak memilih salah satu; hasil dari keduanya digabungkan untuk menentukan status akhir.
+Sistem menghitung 2 bulan dulu. Window 3 bulan baru dibuka jika B1 dan B2 tidak berada di Q3/Q4 berturut-turut dan tidak ada penurunan signifikan.
 
 ## 9A.2 Kapan Window 3 Bulan Digunakan
 
@@ -689,20 +717,14 @@ Sistem dapat membedakan:
 ## 9A.5 Ringkasan Aturan Pemilihan Window
 
 ```
-Setiap evaluasi selalu menjalankan:
+Setiap evaluasi menjalankan:
 
-1. Window 3 bulan kumulatif → menentukan zona (lulus / toleransi / kritis)
-2. Window 3 bulan pola → Consistency Gate (Q4 tiga bln, di bawah 20 tiga bln, tidak ada bln ≥ 30)
-3. Window 2 bulan terbaru → mendeteksi penurunan tersembunyi (B2 < 20 dan B3 < 20)
-
-Jika window 2 bulan terbaru terpicu (B2 < 20 dan B3 < 20):
-→ Status tidak bisa Lanjut jika pola recovery tidak selesai
-
-Jika window 3 bulan pola terpicu (misalnya tiga bulan Q4):
-→ Status langsung Terminasi
-
-Jika hanya window kumulatif yang terpenuhi:
-→ Status bergantung pada zona, bulan terbaru, dan canvassing
+1. Window 2 bulan awal → B1 dan B2 dihitung dulu
+2. Jika B1 < 20 dan B2 < 20 → Terminasi, Bulan 3 tidak dibuka
+3. Jika gate awal lulus → Bulan 3 dibuka
+4. Window 3 bulan kumulatif → menentukan zona (lulus / toleransi / kritis)
+5. Window 3 bulan pola → Consistency Gate (Q4 tiga bln, di bawah 20 tiga bln, tidak ada bln ≥ 30)
+6. Window 2 bulan terbaru → mendeteksi penurunan tersembunyi (B2 < 20 dan B3 < 20)
 ```
 
 ---
@@ -1048,18 +1070,30 @@ Tindakan:
 
 # 11. Matriks Keputusan Lengkap
 
-| Total | Pola | Canvassing | Status | RTL |
-|---:|---|---:|---|---|
-| ≥120 | Semua Q1 | ≥70% | Lanjut Produktif | Pertahankan produktivitas |
-| ≥90 | Semua Q1 | ≥70% | Lanjut Konsisten | Pertahankan 30/bln |
-| ≥90 | Semua minimal Q2 | ≥70% | Lanjut Kumulatif | Naikkan Q2 ke Q1 |
-| ≥75 | Belum memenuhi syarat lanjut | Berapa pun | Toleransi Kuota Kumulatif | Wajib 30 bulan berikutnya |
-| ≥60 | Recovery / belum memenuhi kuota | Berapa pun | Toleransi | Wajib 30 bulan berikutnya |
-| <60 | Zona kritis | Berapa pun | Terminasi | Tidak ada RTL |
-| Berapa pun | B1 Q3/Q4, B2 Q3/Q4 | Berapa pun | Terminasi | Tidak ada RTL |
-| Berapa pun | B1 Q3/Q4, B2 minimal Q2, B3 belum Q1 | Berapa pun | Terminasi | Tidak ada RTL |
-| Berapa pun | B1 Q3/Q4, B2 minimal Q2, B3 Q1 | ≥70% | Toleransi | Evaluasi 1 bulan |
-| Berapa pun | Tiga bulan Q4 | Berapa pun | Terminasi | Tidak ada RTL |
+Keputusan dibaca bertahap. Skema 2 bulan adalah gate awal. Jika gagal, Bulan 3 tidak dibuka. Jika lolos, sistem masuk skema 3 bulan.
+
+## 11.1 Skema 2 Bulan — Gate Awal
+
+| Data | Kondisi | Logika | Status |
+|---|---|---|---|
+| B1, B2 | B1 Q3/Q4 dan B2 Q3/Q4 | Dua bulan awal rendah berturut-turut, tidak perlu menunggu Bulan 3 | Terminasi |
+| B1 → B2 | B1 Q2/Q3/Q4 dan turun >7 closing | Bulan awal belum on target, lalu memburuk tajam | Terminasi |
+| B1, B2 | Tidak memenuhi dua kondisi gagal di atas | Masih layak dibaca dengan data bulan terbaru | Lanjut ke skema 3 bulan |
+
+## 11.2 Skema 3 Bulan — Evaluasi Final
+
+| Total | Kondisi | Logika | Status | RTL |
+|---:|---|---|---|---|
+| ≥120 | Semua Q1, canvassing ≥70% | Total sangat tinggi dan semua bulan on target | Lanjut Produktif | Pertahankan produktivitas |
+| ≥90 | Semua Q1, canvassing ≥70% | Kuota penuh tercapai dengan pola stabil | Lanjut Konsisten | Pertahankan 30/bln |
+| ≥90 | Semua minimal Q2, canvassing ≥70% | Total kuota tercapai, tetapi belum semua Q1 | Lanjut Kumulatif | Naikkan Q2 ke Q1 |
+| Berapa pun | B2 Q2/Q3/Q4 dan B3 turun >7 closing | Bulan terbaru memburuk tajam dari bulan yang belum on target | Terminasi | Tidak ada RTL |
+| Berapa pun | B1 Q3/Q4, B2 minimal Q2, B3 belum Q1 | Recovery awal ada, tetapi belum selesai | Terminasi | Tidak ada RTL |
+| Berapa pun | B1 Q3/Q4, B2 minimal Q2, B3 Q1, canvassing ≥70% | Recovery selesai, tetapi masih perlu monitoring | Toleransi | Evaluasi 1 bulan |
+| ≥75 | Belum memenuhi syarat lanjut | Total cukup, tetapi pola belum cukup kuat | Toleransi Kuota Kumulatif | Wajib 30 bulan berikutnya |
+| ≥60 | Recovery / belum memenuhi kuota | Masih ada ruang recovery, tetapi wajib RTL | Toleransi | Wajib 30 bulan berikutnya |
+| <60 | Zona kritis dan B3 masih <20 atau pola kritis | Total rendah dan bulan terbaru belum pulih | Terminasi | Tidak ada RTL |
+| Berapa pun | Tiga bulan Q4 | Pola kritis penuh | Terminasi | Tidak ada RTL |
 
 ---
 
